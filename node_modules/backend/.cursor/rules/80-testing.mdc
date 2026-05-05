@@ -1,0 +1,11 @@
+---
+description: Testing conventions (unit & integration)
+globs: "src/**/*.{test,spec}.ts"
+alwaysApply: false
+---
+
+# Testing
+
+- Controllers/routes: prefer integration tests (e.g. supertest) to cover middleware + routing.
+- Services: unit tests with repo mocked.
+- Bug fixes should include a regression test when feasible (otherwise provide a clear repro).

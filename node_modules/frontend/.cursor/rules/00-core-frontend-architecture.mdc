@@ -1,0 +1,27 @@
+---
+description: Core frontend architecture and feature boundaries
+alwaysApply: true
+---
+
+# Frontend Architecture (Core)
+
+- Use feature-based structure. Each feature owns its `components`, `hooks`, `store`, `services`, `types`, and tests.
+- Keep `shared` for truly cross-feature code only (base UI, common utils, constants, shared types).
+- Do not create uncontrolled cross-feature imports. A feature can import from `shared`, but not directly from other features unless there is an explicit public API.
+- Prefer path aliases over deep relative paths:
+
+```ts
+// bad
+import { Button } from "../../../../../components";
+
+// good
+import { Button } from "@/shared/components";
+```
+
+- Configure alias in `tsconfig.json`:
+
+```json
+"paths": {
+  "@/*": ["src/*"]
+}
+```

@@ -1,0 +1,47 @@
+---
+description: Place type declarations (interface, type alias, enum) at the top of scope after imports
+globs: "src/**/*.ts"
+alwaysApply: true
+---
+
+# Type declaration order within a scope
+
+- After `import`, group every **type-only** declaration at the **top** of the current scope (file/module, or at the start of a function body if you use a local type), then constants, functions, classes, and logic.
+- Applies to: `interface`, `type`, `enum`. Keep `import` at the top of the file per TypeScript norms; `import type` stays with imports. **After** the import block, prefer type-only declarations before runtime code.
+
+```typescript
+// GOOD — module: imports → types → runtime
+import { foo } from "./foo";
+
+type UserId = string;
+interface UserRow {
+  id: UserId;
+  name: string;
+}
+
+const TABLE = "users";
+
+export function getUser(id: UserId): Promise<UserRow | null> {
+  type CacheKey = `user:${UserId}`; // local type: start of function body
+  const key: CacheKey = `user:${id}`;
+  return foo(key);
+}
+```
+
+```typescript
+// BAD — types mixed between constants / functions at top level
+import { foo } from "./foo";
+
+const TABLE = "users";
+
+type UserId = string; // should sit right after imports
+
+export function getUser(id: UserId) {
+  const key = `user:${id}`;
+  type CacheKey = `user:${UserId}`; // should be before const key
+  return foo(key);
+}
+```
+
+- **Does not** apply to generics on the function signature (`function f<T>(...)`) — that is part of the signature, not the body scope.
+- If a `type` is only used by one function, it may stay in the same file but still **before** that function or at the start of the function body as in the good example above.

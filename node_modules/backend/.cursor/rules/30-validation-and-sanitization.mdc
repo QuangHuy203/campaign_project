@@ -1,0 +1,12 @@
+---
+description: Request validation & sanitization conventions
+globs: "src/**/{controllers,middlewares,validators}/**/*.ts"
+alwaysApply: false
+---
+
+# Validation
+
+- Validate all inputs from `req.params`, `req.query`, `req.body`.
+- Reject early with 400 and clear messages; don’t let invalid data reach DB layer.
+- Whitelist writable fields on updates (avoid mass assignment).
+- Normalize types (numbers/booleans/dates) before passing to service layer.
