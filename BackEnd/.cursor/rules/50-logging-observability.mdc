@@ -1,0 +1,11 @@
+---
+description: Logging & observability baseline (requestId, structured logs)
+alwaysApply: true
+---
+
+# Observability
+
+- Log in structured form (objects), not long concatenated strings.
+- Every request should have `requestId`/correlation id; include it in all logs.
+- Don’t log full bodies for sensitive endpoints (auth, payments, uploads).
+- On errors, log: message + error object + minimal context (route, requestId, userId if available).

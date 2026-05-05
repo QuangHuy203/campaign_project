@@ -1,0 +1,37 @@
+import { z } from 'zod';
+
+import { http } from '@/shared/api/http';
+import type { ApiSuccessResponse } from '@/shared/types/api.types';
+import { encryptPassword } from '@/features/auth/lib/passwordCrypto';
+import {
+  loginPayloadSchema,
+  loginResponseSchema,
+  registerPayloadSchema,
+  type LoginPayload,
+  type LoginResponse,
+  type RegisterPayload,
+} from '@/features/auth/types/auth.types';
+
+const loginEnvelopeSchema = z.object({
+  data: loginResponseSchema,
+});
+
+export async function loginService(payload: LoginPayload): Promise<LoginResponse> {
+  const parsedPayload = loginPayloadSchema.parse(payload);
+  const encryptedPassword = await encryptPassword(parsedPayload.password);
+  const response = await http.post<ApiSuccessResponse<LoginResponse>>('/auth/login', {
+    ...parsedPayload,
+    password: encryptedPassword,
+  });
+  const parsed = loginEnvelopeSchema.parse(response.data);
+  return parsed.data;
+}
+
+export async function registerService(payload: RegisterPayload): Promise<void> {
+  const parsedPayload = registerPayloadSchema.parse(payload);
+  const encryptedPassword = await encryptPassword(parsedPayload.password);
+  await http.post('/auth/register', {
+    ...parsedPayload,
+    password: encryptedPassword,
+  });
+}

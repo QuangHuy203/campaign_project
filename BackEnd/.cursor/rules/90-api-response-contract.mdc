@@ -1,0 +1,11 @@
+---
+description: API response contract (success/error)
+globs: "src/**/controllers/**/*.ts"
+alwaysApply: false
+---
+
+# Response contract
+
+- Success: `{ data, meta? }`
+- Error: `{ error: { code, message, details? } }`
+- Choose one pagination style and stick to it (page/pageSize/total OR cursor).

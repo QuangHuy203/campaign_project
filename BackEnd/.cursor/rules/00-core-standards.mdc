@@ -1,0 +1,12 @@
+---
+description: Core standards for Node/Express TypeScript backend
+alwaysApply: true
+---
+
+# Core standards
+
+- Prefer TypeScript with strict typing; avoid `any` unless justified.
+- Keep functions small and single-purpose; avoid god modules.
+- Don’t add dependencies without a clear reason and minimal surface area.
+- Never log or return secrets (passwords, tokens, raw auth headers, cookies).
+- When changing behavior, update or add tests or provide a reproducible test plan.

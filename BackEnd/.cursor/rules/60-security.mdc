@@ -1,0 +1,12 @@
+---
+description: Security baseline for Express APIs
+alwaysApply: true
+---
+
+# Security baseline
+
+- Use `helmet`; configure CORS with an allowlist (avoid `*` if authenticated).
+- Rate-limit auth/OTP endpoints; mitigate brute force.
+- Be explicit about `trust proxy` when behind a reverse proxy.
+- Never implement custom crypto; use proven libraries for hashing/encryption.
+- Ensure input validation + output encoding for anything user-controlled.

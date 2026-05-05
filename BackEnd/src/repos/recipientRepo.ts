@@ -1,0 +1,25 @@
+import type { Knex } from 'knex';
+
+export type RecipientRow = {
+  id: number;
+  email: string;
+  name: string;
+  created_at: Date;
+};
+
+/** Canonicalize recipients by email so repeated campaign uploads don’t create duplicates and engagement stats stay attributable to one recipient identity. */
+export async function upsertRecipientsByEmail(
+  db: Knex,
+  recipients: Array<{ email: string; name: string }>,
+): Promise<RecipientRow[]> {
+  if (recipients.length === 0) return [];
+
+  const rows = await db('recipients')
+    .insert(recipients.map((r) => ({ email: r.email, name: r.name })))
+    .onConflict('email')
+    .merge(['name'])
+    .returning(['id', 'email', 'name', 'created_at']);
+
+  return rows as RecipientRow[];
+}
+

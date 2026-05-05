@@ -1,0 +1,19 @@
+---
+description: TypeScript naming conventions and type safety rules
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# TypeScript Naming and Quality
+
+- Naming conventions:
+  - Component file: `PascalCase.tsx`
+  - Hook file: `useSomething.ts`
+  - Redux slice file: `xxx.slice.ts`
+  - Service/API file: `xxx.service.ts`
+- Variable names: `camelCase` (example: `userProfile`).
+- Constants: `UPPER_CASE`.
+- Limit usage of `any`; prefer specific types, unions, or generics.
+- Extract reusable types/interfaces into dedicated type files.
+- API responses must have types.
+- Redux state must have types.

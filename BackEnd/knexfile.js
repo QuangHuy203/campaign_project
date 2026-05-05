@@ -1,0 +1,18 @@
+require('dotenv').config();
+
+const connectionString =
+  process.env.NODE_ENV === 'test'
+    ? process.env.TEST_DATABASE_URL
+    : process.env.DATABASE_URL;
+
+/** @type {import('knex').Knex.Config} */
+module.exports = {
+  client: 'pg',
+  connection: connectionString,
+  pool: { min: 0, max: 10 },
+  migrations: {
+    directory: './db/migrations',
+    tableName: 'knex_migrations',
+  },
+};
+

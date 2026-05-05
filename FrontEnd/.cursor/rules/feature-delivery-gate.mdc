@@ -1,0 +1,37 @@
+---
+description: Mandatory feature-delivery gate before implementation
+alwaysApply: true
+---
+
+# Feature Delivery Gate
+
+Scope: this rule applies to all feature work in `Claude_test\FrontEnd`.
+
+When implementing any new feature, follow this exact sequence and do not skip steps:
+
+1. Analyze all possible use cases from the requirement, including success, validation failure, empty data, permission/auth, and system-error paths.
+2. Check the backend project at `Claude_test\BackEnd` (project-root relative, machine-independent path) to verify existing APIs cover all use cases.
+   - If all required APIs exist, continue.
+   - If any API is missing, list missing use cases and required endpoints, then ask for confirmation before proceeding.
+3. Before UI implementation, verify API response `status`, `message`, and `data`.
+   - Use `status` + `message` to map accurate user-facing feedback (success/failure/system error).
+   - Use `data` shape to determine required UI elements/states.
+4. Produce a conclusion table that summarizes use cases, API coverage, response mapping, and planned UI behavior; then wait for user confirmation.
+5. Start coding only after explicit approval.
+
+Do not implement code before step 4 is completed and approved.
+
+## Required conclusion table format
+
+| Use case | Frontend action | Backend API coverage (`Claude_test\BackEnd`) | Response handling (status/message/data) | Decision |
+|---|---|---|---|---|
+| ... | ... | ... | ... | Ready / Missing API / Need clarification |
+
+Only include rows that are NOT fully satisfied yet.
+Remove use cases/features that already meet requirements.
+
+## Approval gate
+
+- If any row is `Missing API` or `Need clarification`, stop and ask for confirmation.
+- If all rows are `Ready`, still wait for explicit user approval before coding.
+

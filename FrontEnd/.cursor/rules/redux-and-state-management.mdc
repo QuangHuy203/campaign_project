@@ -1,0 +1,17 @@
+---
+description: Redux Toolkit usage and state management boundaries
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Redux and State Management
+
+- Redux Toolkit is mandatory for Redux usage (`createSlice`, `createAsyncThunk`, or RTK Query).
+- Organize Redux per feature (slice/state/actions close to the feature).
+- Do not call APIs directly in components.
+- Use `thunk` or `RTK Query` for async/data fetching.
+- Every Redux state shape must have explicit TypeScript types.
+- Do not overuse Redux:
+  - Local UI state -> `useState`
+  - Global/shared app state -> Redux
+- Slice naming convention: `xxx.slice.ts`.

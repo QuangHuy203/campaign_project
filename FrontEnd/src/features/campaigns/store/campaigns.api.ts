@@ -1,0 +1,161 @@
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+
+import { mapAxiosError } from '@/shared/api/apiError';
+import type { ApiError } from '@/shared/types/api.types';
+import { isTokenExpired } from '@/features/auth/lib/tokenStorage';
+import {
+  createCampaignService,
+  deleteCampaignService,
+  getCampaignDetailService,
+  getCampaignStatsService,
+  listCampaignsService,
+  scheduleCampaignService,
+  sendCampaignService,
+  updateCampaignService,
+} from '@/features/campaigns/services/campaign.service';
+import type {
+  Campaign,
+  CampaignDetail,
+  CampaignStats,
+  CreateCampaignPayload,
+  ScheduleCampaignPayload,
+  UpdateCampaignPayload,
+} from '@/features/campaigns/types/campaign.types';
+
+import type { RootState } from '@/app/store';
+
+function readToken(getState: () => unknown): string {
+  const state = getState() as RootState;
+  const token = state.auth.token;
+  if (!token || isTokenExpired(token)) return '';
+  return token;
+}
+
+export const campaignsApi = createApi({
+  reducerPath: 'campaignsApi',
+  baseQuery: fakeBaseQuery<ApiError>(),
+  tagTypes: ['Campaign', 'CampaignDetail', 'CampaignStats'],
+  endpoints: (builder) => ({
+    listCampaigns: builder.query<Campaign[], void>({
+      async queryFn(_arg, api) {
+        try {
+          const data = await listCampaignsService(readToken(api.getState));
+          return { data };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      providesTags: (result) =>
+        result
+          ? [...result.map((item) => ({ type: 'Campaign' as const, id: item.id })), { type: 'Campaign', id: 'LIST' }]
+          : [{ type: 'Campaign', id: 'LIST' }],
+    }),
+    createCampaign: builder.mutation<Campaign, CreateCampaignPayload>({
+      async queryFn(payload, api) {
+        try {
+          const data = await createCampaignService(readToken(api.getState), payload);
+          return { data };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      invalidatesTags: [{ type: 'Campaign', id: 'LIST' }],
+    }),
+    getCampaignDetail: builder.query<CampaignDetail, number>({
+      async queryFn(id, api) {
+        try {
+          const data = await getCampaignDetailService(readToken(api.getState), id);
+          return { data };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      providesTags: (_result, _error, id) => [
+        { type: 'CampaignDetail', id },
+        { type: 'CampaignStats', id },
+        { type: 'Campaign', id },
+      ],
+    }),
+    getCampaignStats: builder.query<CampaignStats, number>({
+      async queryFn(id, api) {
+        try {
+          const data = await getCampaignStatsService(readToken(api.getState), id);
+          return { data };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      providesTags: (_result, _error, id) => [{ type: 'CampaignStats', id }],
+    }),
+    updateCampaign: builder.mutation<Campaign, { id: number; payload: UpdateCampaignPayload }>({
+      async queryFn(args, api) {
+        try {
+          const data = await updateCampaignService(readToken(api.getState), args.id, args.payload);
+          return { data };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      invalidatesTags: (_result, _error, args) => [
+        { type: 'Campaign', id: args.id },
+        { type: 'CampaignDetail', id: args.id },
+      ],
+    }),
+    scheduleCampaign: builder.mutation<Campaign, { id: number; payload: ScheduleCampaignPayload }>({
+      async queryFn(args, api) {
+        try {
+          const data = await scheduleCampaignService(readToken(api.getState), args.id, args.payload);
+          return { data };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      invalidatesTags: (_result, _error, args) => [
+        { type: 'Campaign', id: args.id },
+        { type: 'CampaignDetail', id: args.id },
+        { type: 'Campaign', id: 'LIST' },
+      ],
+    }),
+    sendCampaign: builder.mutation<Campaign, number>({
+      async queryFn(id, api) {
+        try {
+          const data = await sendCampaignService(readToken(api.getState), id);
+          return { data };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Campaign', id },
+        { type: 'CampaignDetail', id },
+        { type: 'CampaignStats', id },
+        { type: 'Campaign', id: 'LIST' },
+      ],
+    }),
+    deleteCampaign: builder.mutation<void, number>({
+      async queryFn(id, api) {
+        try {
+          await deleteCampaignService(readToken(api.getState), id);
+          return { data: undefined };
+        } catch (error) {
+          return { error: mapAxiosError(error) };
+        }
+      },
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Campaign', id },
+        { type: 'Campaign', id: 'LIST' },
+      ],
+    }),
+  }),
+});
+
+export const {
+  useListCampaignsQuery,
+  useCreateCampaignMutation,
+  useGetCampaignDetailQuery,
+  useGetCampaignStatsQuery,
+  useUpdateCampaignMutation,
+  useScheduleCampaignMutation,
+  useSendCampaignMutation,
+  useDeleteCampaignMutation,
+} = campaignsApi;

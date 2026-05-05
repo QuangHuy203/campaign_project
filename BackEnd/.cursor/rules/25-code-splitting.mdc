@@ -1,0 +1,33 @@
+---
+description: When and how to split modules, functions, and changes (aligns with layering)
+alwaysApply: true
+---
+
+# Splitting code
+
+## When to split
+
+- **Single responsibility**: a file or function does more than one clear job (e.g. HTTP shaping + DB + rules).
+- **Size & scanability**: very long functions or files that are hard to review or test; extract named units with stable inputs/outputs.
+- **Reuse**: the same block appears twice; extract once to `utils/` or a small helper in the same layer, not copy-paste.
+- **Testing**: logic is hard to unit-test because it is tangled with I/O; pull pure/orchestration pieces into **services** or focused helpers.
+
+## Where pieces go (layering)
+
+- **Routes**: stay thin; split only for route groups or versioning, not for business logic.
+- **Controllers**: split by resource or by clear HTTP concerns; never move DB or domain rules here.
+- **Services**: split orchestration and domain rules into cohesive modules; one “area” per file when it grows.
+- **Repos**: split by aggregate/table or query family; keep Express out of repos.
+- **Utils**: small, stateless helpers; avoid a catch-all — if it grows domain meaning, promote to service/repo.
+
+## When not to split
+
+- **Speculation**: do not carve abstractions “for later”; split when duplication or complexity is real.
+- **Tiny indirection**: avoid one-line wrappers or files that only re-export unless they stabilize a public API boundary.
+- **PR scope**: prefer splitting **work** into small PRs (see project `split-to-prs` guidance when applicable), not scattering one feature across many files without need.
+
+## Checks before finishing a split
+
+- Imports respect direction: **routes → controllers → services → repos** (no upward or sideways leakage of HTTP into data layer).
+- New files have one primary purpose; names match what callers expect.
+- Behavior covered by existing tests updated or a short manual/ automated test plan.

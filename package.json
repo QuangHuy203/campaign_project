@@ -1,0 +1,15 @@
+{
+  "name": "campaign-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "BackEnd",
+    "FrontEnd"
+  ],
+  "scripts": {
+    "dev:frontend": "npm --workspace FrontEnd run dev",
+    "build:frontend": "npm --workspace FrontEnd run build",
+    "dev:backend": "npm --workspace BackEnd run dev",
+    "build:backend": "npm --workspace BackEnd run build"
+  }
+}

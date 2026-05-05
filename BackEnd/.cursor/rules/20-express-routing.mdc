@@ -1,0 +1,13 @@
+---
+description: Express routing & controller patterns
+globs: "src/**/{routes,controllers}/**/*.ts"
+alwaysApply: false
+---
+
+# Routing & controllers
+
+- Routes only map URL → middlewares → handler; no heavy logic.
+- Controllers read `params/query/body`, call service, return JSON.
+- Always `return res.status(...).json(...)` in each branch.
+- Don’t mix `res.json(...)` and `next()` in the same success path.
+- Never `throw` strings; throw `Error` (or your project error classes).
